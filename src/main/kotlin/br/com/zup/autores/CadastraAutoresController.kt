@@ -24,44 +24,62 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
     //    return HttpResponse.created(uri)
 
     @Get
-    fun busca(): HttpResponse<List<AutorResponse>> {
-        val autor = autorRepository?.findAll()
-            .let { autores ->
-                autores.map { autor ->
-                    AutorResponse(autor)
+    fun busca(@QueryValue(defaultValue = "") email: String): HttpResponse<Any> {
+        autorRepository.findByEmail(email)
+            .let {
+                if (it.isPresent) {
+                    return HttpResponse.ok(AutorResponse(it.get()))
                 }
-            }.run {
-                if (this.isEmpty()) {
-                    return HttpResponse.notFound()
-                }
-                return HttpResponse.ok(this)
+            }.let {
+                val autor = autorRepository.findAll()
+                    .let { autores ->
+                        autores.map { autor ->
+                            AutorResponse(autor)
+                        }
+                    }.let {
+                        return HttpResponse.ok(it)
+                    }
+                return HttpResponse.notFound()
             }
     }
+//        if (email.isBlank()) {
+//            val autores = autorRepository.findAll()
+//            val resposta = autores.map { autor -> AutorResponse(autor) }
+//            return HttpResponse.ok(resposta)
+//        }
+//        val possivelAutor =  autorRepository.findByEmail(email)
+//        if(possivelAutor.isEmpty){
+//            return HttpResponse.notFound()
+//        }
+//        return HttpResponse.ok(AutorResponse(possivelAutor.get()))
 
     @Put("/{id}")
     fun atualiza(@PathVariable id: Long, descricao: String): HttpResponse<Any> =
-        autorRepository.findById(id).also {
-            if (it.isEmpty) {
-                return HttpResponse.notFound()
+        autorRepository.findById(id)
+            .also {
+                if (it.isEmpty) {
+                    return HttpResponse.notFound()
+                }
+            }.run {
+                get().descricao = descricao
+                autorRepository.update(get())
+            }.let { autor ->
+                return HttpResponse.ok(AutorResponse(autor))
             }
-        }.run {
-            get().descricao = descricao
-            autorRepository.update(get())
-        }.let { autor ->
-            return HttpResponse.ok(AutorResponse(autor))
-        }
 
     @Delete("/{id}")
     fun deletar(@PathVariable id: Long): HttpResponse<Any> {
-        autorRepository.findById(id).also {
-            if (it.isEmpty) {
-                return HttpResponse.notFound()
+        autorRepository.findById(id)
+            .also {
+                if (it.isEmpty) {
+                    return HttpResponse.notFound()
+                }
+            }.run {
+                autorRepository.delete(this.get())
+                return HttpResponse.ok()
             }
-        }.run {
-            autorRepository.delete(this.get())
-            return HttpResponse.ok()
-        }
     }
+
 }
 
 
