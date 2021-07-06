@@ -50,7 +50,24 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
         }.let { autor ->
             return HttpResponse.ok(AutorResponse(autor))
         }
+
+    @Delete("/{id}")
+    fun deletar(@PathVariable id: Long): HttpResponse<Any> {
+        autorRepository.findById(id).also {
+            if (it.isEmpty) {
+                return HttpResponse.notFound()
+            }
+        }.run {
+            autorRepository.delete(this.get())
+            return HttpResponse.ok()
+        }
+    }
 }
+
+
+
+
+
 
 
 
