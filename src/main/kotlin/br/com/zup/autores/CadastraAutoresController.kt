@@ -33,7 +33,7 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
             val autores = autorRepository.findAll(pageable)
             return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
         }
-        val possivelAutor = autorRepository.findByEmailContains(email, pageable)
+        val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
         return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
     }
 
