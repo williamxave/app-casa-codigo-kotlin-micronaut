@@ -1,10 +1,7 @@
 package br.com.zup.autores
 
 import io.micronaut.http.HttpResponse
-import io.micronaut.http.annotation.Body
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.Post
+import io.micronaut.http.annotation.*
 import io.micronaut.http.uri.UriBuilder
 import io.micronaut.validation.Validated
 import javax.validation.Valid
@@ -40,7 +37,21 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
                 return HttpResponse.ok(this)
             }
     }
+
+    @Put("/{id}")
+    fun atualiza(@PathVariable id: Long, descricao: String): HttpResponse<Any> =
+        autorRepository.findById(id).also {
+            if (it.isEmpty) {
+                return HttpResponse.notFound()
+            }
+        }.run {
+            get().descricao = descricao
+            autorRepository.update(get())
+        }.let { autor ->
+            return HttpResponse.ok(AutorResponse(autor))
+        }
 }
+
 
 
 
