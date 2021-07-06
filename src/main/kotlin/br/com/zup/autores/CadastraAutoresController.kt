@@ -27,14 +27,13 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
     //    return HttpResponse.created(uri)
 
     @Get
-    fun busca(
-        @QueryValue(defaultValue = "") email: String, pageable: Pageable): MutableHttpResponse<Page<AutorResponse>> {
+    fun busca( @QueryValue(defaultValue = "") email: String, pageable: Pageable): MutableHttpResponse<Page<AutorResponse>> {
 
         if (email.isBlank()) {
             val autores = autorRepository.findAll(pageable)
             return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
         }
-        val possivelAutor = autorRepository.findByEmailContaining(email, pageable)
+        val possivelAutor = autorRepository.findByEmailContains(email, pageable)
         return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
     }
 
