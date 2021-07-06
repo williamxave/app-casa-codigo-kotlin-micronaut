@@ -1,6 +1,9 @@
 package br.com.zup.autores
 
+import io.micronaut.data.model.Page
+import io.micronaut.data.model.Pageable
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.*
 import io.micronaut.http.uri.UriBuilder
 import io.micronaut.validation.Validated
@@ -24,34 +27,16 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
     //    return HttpResponse.created(uri)
 
     @Get
-    fun busca(@QueryValue(defaultValue = "") email: String): HttpResponse<Any> {
-        autorRepository.findByEmail(email)
-            .let {
-                if (it.isPresent) {
-                    return HttpResponse.ok(AutorResponse(it.get()))
-                }
-            }.let {
-                val autor = autorRepository.findAll()
-                    .let { autores ->
-                        autores.map { autor ->
-                            AutorResponse(autor)
-                        }
-                    }.let {
-                        return HttpResponse.ok(it)
-                    }
-                return HttpResponse.notFound()
-            }
+    fun busca(
+        @QueryValue(defaultValue = "") email: String, pageable: Pageable): MutableHttpResponse<Page<AutorResponse>> {
+
+        if (email.isBlank()) {
+            val autores = autorRepository.findAll(pageable)
+            return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
+        }
+        val possivelAutor = autorRepository.findByEmailContaining(email, pageable)
+        return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
     }
-//        if (email.isBlank()) {
-//            val autores = autorRepository.findAll()
-//            val resposta = autores.map { autor -> AutorResponse(autor) }
-//            return HttpResponse.ok(resposta)
-//        }
-//        val possivelAutor =  autorRepository.findByEmail(email)
-//        if(possivelAutor.isEmpty){
-//            return HttpResponse.notFound()
-//        }
-//        return HttpResponse.ok(AutorResponse(possivelAutor.get()))
 
     @Put("/{id}")
     fun atualiza(@PathVariable id: Long, descricao: String): HttpResponse<Any> =
