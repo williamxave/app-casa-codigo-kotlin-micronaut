@@ -7,6 +7,7 @@ import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.*
 import io.micronaut.http.uri.UriBuilder
 import io.micronaut.validation.Validated
+import javax.transaction.Transactional
 import javax.validation.Valid
 
 @Validated
@@ -14,6 +15,7 @@ import javax.validation.Valid
 class CadastraAutoresController(val autorRepository: AutorRepository) {
 
     @Post
+    @Transactional
     fun cadastra(@Body @Valid novoAutor: AutorRequest): HttpResponse<Any> = novoAutor.paraAutor()
         .let(autorRepository::save)
         .let { autor ->
@@ -29,12 +31,12 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
     @Get
     fun busca( @QueryValue(defaultValue = "") email: String, pageable: Pageable): MutableHttpResponse<Page<AutorResponse>> {
 
-        if (email.isBlank()) {
-            val autores = autorRepository.findAll(pageable)
-            return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
+        if (autorRepository.existsByEmail(email)) {
+            val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
+            return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
         }
-        val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
-        return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
+        val autores = autorRepository.findAll(pageable)
+        return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
     }
 
     @Put("/{id}")

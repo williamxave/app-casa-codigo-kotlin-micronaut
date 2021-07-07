@@ -1,6 +1,7 @@
 buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
     }
 }
 
@@ -14,6 +15,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.jpa") version "1.4.32"
 }
 apply plugin: "kotlin-noarg"
+apply plugin: "kotlin-allopen"
 
 version = "0.1"
 group = "br.com.zup"

@@ -16,4 +16,6 @@ interface AutorRepository : JpaRepository<Autor, Long> {
         countQuery = "SELECT count(e) FROM Autor e WHERE e.email = :email"
     )
     fun buscaPorEmail(email: String, page: Pageable): Page<Autor>
+
+    fun existsByEmail(email: String): Boolean
 }
