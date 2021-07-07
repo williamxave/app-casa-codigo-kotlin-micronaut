@@ -39,17 +39,20 @@ class CadastraAutoresController(
         @QueryValue(defaultValue = "") email: String,
         pageable: Pageable
     ): MutableHttpResponse<Page<AutorResponse>> {
-
         if (autorRepository.existsByEmail(email)) {
-            val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
-            return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
+            return autorRepository.buscaPorEmail(email, pageable).run { map(::AutorResponse) }
+                .let { HttpResponse.ok(it) }
+//            val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
+//            return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
         }
-        val autores = autorRepository.findAll(pageable)
-        return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
+        return autorRepository.findAll(pageable).run { map(::AutorResponse) }.let { HttpResponse.ok(it) }
+//        val autores = autorRepository.findAll(pageable)
+//        return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
     }
 
     @Put("/{id}")
-    fun atualiza(@PathVariable id: Long, descricao: String): HttpResponse<Any> =
+    fun atualiza(@PathVariable id: Long, descricao: String): HttpResponse<Any> {
+
         autorRepository.findById(id)
             .also {
                 if (it.isEmpty) {
@@ -61,6 +64,8 @@ class CadastraAutoresController(
             }.let { autor ->
                 return HttpResponse.ok(AutorResponse(autor))
             }
+    }
+
 
     @Delete("/{id}")
     fun deletar(@PathVariable id: Long): HttpResponse<Any> {

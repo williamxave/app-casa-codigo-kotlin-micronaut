@@ -15,3 +15,14 @@ url:
   api:
     cep: ${URL_API_CEP:`http://viacep.com.br/ws`}
 
+    ##
+    # Jackson configuration
+    # https://github.com/micronaut-projects/micronaut-core/issues/240
+    # https://geowarin.com/correctly-handle-jsr-310-java-8-dates-with-jackson/
+    # https://www.baeldung.com/jackson-serialize-dates
+    # Faz com que o LocalDateTime fique bonitinho e não em forma de array
+    ##
+jackson:
+  serialization:
+    writeDatesAsTimestamps: false
+
