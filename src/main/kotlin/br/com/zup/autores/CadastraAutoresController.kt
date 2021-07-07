@@ -19,15 +19,15 @@ class CadastraAutoresController(
 
     @Post
     @Transactional
-    fun cadastra(@Body @Valid novoAutor: AutorRequest): HttpResponse<Any> =
-        cepClient.buscaCep(novoAutor.cep)
-            .run {
-                val possivelAutor = novoAutor.paraAutor(this.body()!!)
-                autorRepository.save(possivelAutor)
-            }.let { autor ->
-                val uri = UriBuilder.of("/autores/{id}").expand(mutableMapOf(Pair("id", autor.id)))
-                return HttpResponse.created(uri)
-            }
+    fun cadastra(@Body @Valid novoAutor: AutorRequest): HttpResponse<Any> {
+        return with(cepClient.buscaCep(novoAutor.cep)) {
+            val possivelAutor = novoAutor.paraAutor(this.body()!!)
+            autorRepository.save(possivelAutor)
+                .run {
+                    UriBuilder.of("/autores/{id}").expand(mutableMapOf(Pair("id", this.id)))
+                }.let { HttpResponse.created(it) }
+        }
+    }
 
     //    val autor =  novoAutor.paraAutor()
     //    autorRepository.save(autor)
