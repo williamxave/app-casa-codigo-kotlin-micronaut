@@ -12,16 +12,22 @@ import javax.validation.Valid
 
 @Validated
 @Controller("/autores")
-class CadastraAutoresController(val autorRepository: AutorRepository) {
+class CadastraAutoresController(
+    val autorRepository: AutorRepository,
+    val cepClient: CepClient
+) {
 
     @Post
     @Transactional
-    fun cadastra(@Body @Valid novoAutor: AutorRequest): HttpResponse<Any> = novoAutor.paraAutor()
-        .let(autorRepository::save)
-        .let { autor ->
-            val uri = UriBuilder.of("/autores/{id}").expand(mutableMapOf(Pair("id", autor.id)))
-            return HttpResponse.created(uri)
-        }
+    fun cadastra(@Body @Valid novoAutor: AutorRequest): HttpResponse<Any> =
+        cepClient.buscaCep(novoAutor.cep)
+            .run {
+                val possivelAutor = novoAutor.paraAutor(this.body()!!)
+                autorRepository.save(possivelAutor)
+            }.let { autor ->
+                val uri = UriBuilder.of("/autores/{id}").expand(mutableMapOf(Pair("id", autor.id)))
+                return HttpResponse.created(uri)
+            }
 
     //    val autor =  novoAutor.paraAutor()
     //    autorRepository.save(autor)
@@ -29,7 +35,10 @@ class CadastraAutoresController(val autorRepository: AutorRepository) {
     //    return HttpResponse.created(uri)
 
     @Get
-    fun busca( @QueryValue(defaultValue = "") email: String, pageable: Pageable): MutableHttpResponse<Page<AutorResponse>> {
+    fun busca(
+        @QueryValue(defaultValue = "") email: String,
+        pageable: Pageable
+    ): MutableHttpResponse<Page<AutorResponse>> {
 
         if (autorRepository.existsByEmail(email)) {
             val possivelAutor = autorRepository.buscaPorEmail(email, pageable)

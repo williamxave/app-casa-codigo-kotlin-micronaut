@@ -11,3 +11,7 @@ datasources:
 jpa.default.properties.hibernate.hbm2ddl.auto: update
 jpa.default.properties.hibernate.show_sql: true
 
+url:
+  api:
+    cep: ${URL_API_CEP:`http://viacep.com.br/ws`}
+
