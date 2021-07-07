@@ -51,6 +51,8 @@ dependencies {
 
     //JPA
     implementation("mysql:mysql-connector-java:5.1.6")
+    // Para o micronaut aprender a serializar e deserializar xml
+    implementation("io.micronaut.xml:micronaut-jackson-xml")
 
 }
 
