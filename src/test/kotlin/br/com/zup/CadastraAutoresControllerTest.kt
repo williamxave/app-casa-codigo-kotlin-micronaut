@@ -26,6 +26,7 @@ internal class CadastraAutoresControllerTest {
 
     @BeforeEach
     internal fun setUp() {
+        autorRepository.deleteAll()
         autor = Autor(
             "eu",
             "william@email.com",
@@ -42,7 +43,9 @@ internal class CadastraAutoresControllerTest {
     @Test
     internal fun `deve retornar os detalhes de um autor`() {
 
-        val response = client.toBlocking().exchange("/autores?email=${autor.email}", AutorResponse::class.java)
+        val response = client.toBlocking()
+            .exchange("/autores?email=${autor.email}",
+                AutorResponse::class.java)
 
         assertEquals(HttpStatus.OK, response.status)
         assertNotNull(response.body())

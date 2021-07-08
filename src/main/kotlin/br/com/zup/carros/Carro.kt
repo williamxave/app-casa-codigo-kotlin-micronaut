@@ -1,12 +1,17 @@
 package br.com.zup.carros
 
-import io.micronaut.core.annotation.Introspected
-import javax.validation.constraints.NotBlank
+import javax.persistence.*
 
-@Introspected
-data class Carro(
-    @field:NotBlank val nome: String?,
-    @field:NotBlank @field:Placa val placa: String?
-){
+@Entity
+class Carro(
+    //@field:NotBlank
+    val nome: String,
+    // @field:NotBlank @field:Placa
+    val placa: String
+) {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null
 
 }

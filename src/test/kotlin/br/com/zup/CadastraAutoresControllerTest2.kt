@@ -1,5 +1,8 @@
-package br.com.zup.autores
+package br.com.zup
 
+import br.com.zup.autores.AutorRequest
+import br.com.zup.autores.CepClient
+import br.com.zup.autores.EnderecoResponse
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
@@ -37,7 +40,11 @@ internal class CadastraAutoresControllerTest2 {
             siafi = "teste",
         )
 
-        val novoAutorRequest = AutorRequest("william", "william@email.com", "programador", "95765-000", "1")
+        val novoAutorRequest =
+            AutorRequest("william",
+                "william@email.com",
+                "programador", "95765-000",
+                "1")
         Mockito.`when`(cepClient.buscaCep(novoAutorRequest.cep)).thenReturn(HttpResponse.ok(enderecoResponse))
         val request = HttpRequest.POST("/autores", novoAutorRequest)
 

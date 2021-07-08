@@ -15,6 +15,10 @@ url:
   api:
     cep: ${URL_API_CEP:`http://viacep.com.br/ws`}
 
+logger:
+  levels:
+    io.micronaut.transaction: DEBUG
+
     ##
     # Jackson configuration
     # https://github.com/micronaut-projects/micronaut-core/issues/240
