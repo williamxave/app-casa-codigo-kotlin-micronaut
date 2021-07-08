@@ -11,5 +11,4 @@ class Endereco(
     val logradouro = enderecoResponse.logradouro
     val complemento = enderecoResponse.complemento
     val bairro = enderecoResponse.bairro
-    val estado = enderecoResponse.uf
 }

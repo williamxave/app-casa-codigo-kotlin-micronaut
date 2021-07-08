@@ -16,6 +16,6 @@ data class AutorRequest(
 
     fun paraAutor(enderecoResponse: EnderecoResponse): Autor {
         val novoEndereco = Endereco(enderecoResponse,numero)
-        return Autor(nome, email, descricao, novoEndereco)
+        return Autor(nome, email, descricao)
     }
 }

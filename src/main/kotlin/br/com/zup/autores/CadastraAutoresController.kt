@@ -38,16 +38,17 @@ class CadastraAutoresController(
     fun busca(
         @QueryValue(defaultValue = "") email: String,
         pageable: Pageable
-    ): MutableHttpResponse<Page<AutorResponse>> {
+    ): MutableHttpResponse<Any> {
         if (autorRepository.existsByEmail(email)) {
-            return autorRepository.buscaPorEmail(email, pageable).run { map(::AutorResponse) }
-                .let { HttpResponse.ok(it) }
-//            val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
-//            return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
+//            return autorRepository.buscaPorEmail(email, pageable).run { map(::AutorResponse) }
+//                .let { HttpResponse.ok(it) }
+           // val possivelAutor = autorRepository.buscaPorEmail(email, pageable)
+            val possivelAutor = autorRepository.findByEmail(email)
+            return HttpResponse.ok(possivelAutor.map { autor -> AutorResponse(autor) })
         }
-        return autorRepository.findAll(pageable).run { map(::AutorResponse) }.let { HttpResponse.ok(it) }
-//        val autores = autorRepository.findAll(pageable)
-//        return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
+        // return autorRepository.findAll(pageable).run { map(::AutorResponse) }.let { HttpResponse.ok(it) }
+        val autores = autorRepository.findAll(pageable)
+        return HttpResponse.ok(autores.map { autor -> AutorResponse(autor) })
     }
 
     @Put("/{id}")
